@@ -153,3 +153,20 @@ Please explain in the Readme how to handle rate limitations for fetching driving
 
 - Max 25 results per request
 - Max 10 requests per second
+
+=============================
+
+When integrating a third-party service for fetching driving distances, it's crucial to respect their rate limitations to ensure a smooth and uninterrupted experience. For this proof of concept (PoC), we'll be dealing with a service that imposes the following limits:
+
+- Maximum of 25 results per request
+- Maximum of 10 requests per second
+
+Strategies for Handling Rate Limitations:
+
+1. Batch handling - If Third party service endpoint gives us opportunity to send batch requests, we should use it, to minimazi the requests sent to the sever. For example lets take the distance matricx, it takes an array of destinations and origins, so we can design our farm api in such a way that maybe we put the distance calculation under the queue - this will give us possibility to consum a batch of messages from the queue, collect a list of destinations and origins and calculate driving distances in single request. OR we can add bulk create farm endpoint, where user can send the list of farms instead of single farm creation at a time and again, collect the farm addresses and calculate distances between owner and farms.
+
+2. Add a rate limiter - to satisfy the 10 requests per second limit, we can implement a rate limiter in our code. This can be achieved using various techniques, such as token bucket or leaky bucket algorithms. But this has one gotcha, if we are running multiple instances of this 3rd party integration, we need some common storage to control the token count. For this we can use redis.
+
+3. Retrying Mechanism - In case we hit the rate limit, we should have a retry mechanism in place. This could involve a simple backoff strategy where we wait for a certain period before retrying the request. It's important to handle this gracefully to avoid any interruptions in the service.
+
+4. Caching - If the distances between certain locations are requested frequently, consider caching these results. This will reduce the number of requests made to the third-party service and improve the overall efficiency of the application.
