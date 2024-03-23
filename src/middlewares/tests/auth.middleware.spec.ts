@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import config from "config/config";
 import { fromUnixTime } from "date-fns";
 import { UnauthorizedError } from "errors/errors";
-import { Express, Request, Response } from "express";
+import { Express, Response } from "express";
 import { clearDatabase, disconnectAndClearDatabase } from "helpers/utils";
 import http from "http";
 import { decode, sign } from "jsonwebtoken";
@@ -12,6 +12,7 @@ import { User } from "modules/users/entities/user.entity";
 import ds from "orm/orm.config";
 import { setupServer } from "server/server";
 import { Repository } from "typeorm";
+import { ExtendedRequest } from "types";
 
 const mockedNext = jest.fn();
 
@@ -66,7 +67,7 @@ describe("AuthMiddleware", () => {
 
     const { token } = await signAsync(user);
 
-    const req = { headers: { authorization: `Bearer ${token}` } } as Request;
+    const req = { headers: { authorization: `Bearer ${token}` } } as ExtendedRequest;
 
     await authMiddleware(req, {} as Response, mockedNext);
 
@@ -75,7 +76,7 @@ describe("AuthMiddleware", () => {
   });
 
   it("should pass UnauthorizedError to next when auth token is not provided", async () => {
-    const req = { headers: {} } as Request;
+    const req = { headers: {} } as ExtendedRequest;
 
     await authMiddleware(req, {} as Response, mockedNext);
     expect(mockedNext).toBeCalledWith(new UnauthorizedError());
@@ -83,7 +84,7 @@ describe("AuthMiddleware", () => {
   });
 
   it("should pass UnauthorizedError to next when token is not valid", async () => {
-    const req = { headers: { authorization: "Bearer not_valid" } } as Request;
+    const req = { headers: { authorization: "Bearer not_valid" } } as ExtendedRequest;
 
     await authMiddleware(req, {} as Response, mockedNext);
     expect(mockedNext).toBeCalledWith(new UnauthorizedError());

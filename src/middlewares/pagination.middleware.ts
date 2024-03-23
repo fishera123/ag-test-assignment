@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { buildPaginationFilter } from "helpers/pagination-query";
+import { ExtendedRequest } from "types";
 
-export const paginationMiddleware = (req: Request, _: Response, next: NextFunction): void => {
+export const paginationMiddleware = (req: ExtendedRequest, _: Response, next: NextFunction): void => {
   if (req.method !== "GET") {
     next();
     return;

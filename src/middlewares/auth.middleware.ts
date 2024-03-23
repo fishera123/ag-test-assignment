@@ -1,10 +1,11 @@
 import config from "config/config";
 import { UnauthorizedError } from "errors/errors";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { JwtPayload, verify } from "jsonwebtoken";
 import { AuthService } from "modules/auth/auth.service";
+import { ExtendedRequest } from "types";
 
-export const authMiddleware = async (req: Request, _: Response, next: NextFunction): Promise<void> => {
+export const authMiddleware = async (req: ExtendedRequest, _: Response, next: NextFunction): Promise<void> => {
   const authService = new AuthService();
 
   if (!req.headers.authorization) {

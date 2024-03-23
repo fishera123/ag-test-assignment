@@ -21,6 +21,10 @@ export class FarmsService {
   }
 
   public async createFarm(data: CreateFarmInputDto, user: User): Promise<CreateFarmOutputDto> {
+    if (data.owner !== user.email) {
+      throw new UnprocessableEntityError("You can only create farms for yourself");
+    }
+
     const existingFarm = await this.farmsRepository.findOne({ where: { name: data.name } });
 
     if (existingFarm) throw new UnprocessableEntityError("A farm with the same name already exists");

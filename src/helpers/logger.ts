@@ -2,10 +2,11 @@ import config from "config/config";
 import winston, { format } from "winston";
 
 export class Logger {
-  private static logger: winston.Logger;
+  private static instance: Logger;
+  private logger: winston.Logger;
 
   private constructor() {
-    Logger.logger = winston.createLogger({
+    this.logger = winston.createLogger({
       level: config.NODE_ENV === "development" ? "debug" : "info",
       format: format.combine(
         format.colorize(),
@@ -17,27 +18,23 @@ export class Logger {
       transports: [new winston.transports.Console()],
     });
   }
-  public debug(message: string): void {
-    Logger.logger.debug(message);
+
+  public static getInstance(): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
   }
 
-  public static debug(message: string): void {
-    Logger.logger.debug(message);
+  public debug(message: string): void {
+    this.logger.debug(message);
   }
 
   public info(message: string): void {
-    Logger.logger.info(message);
-  }
-
-  public static info(message: string): void {
-    Logger.logger.info(message);
+    this.logger.info(message);
   }
 
   public error(message: string | Error): void {
-    Logger.logger.error(message);
-  }
-
-  public static error(message: string | Error): void {
-    Logger.logger.error(message);
+    this.logger.error(message);
   }
 }

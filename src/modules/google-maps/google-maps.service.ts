@@ -6,9 +6,11 @@ import { GoogleMapsErrors } from "./google-maps.errors";
 
 export class GoogleMapsService {
   private readonly client: Client;
+  private readonly logger: Logger;
 
   constructor() {
     this.client = new Client({});
+    this.logger = Logger.getInstance();
   }
 
   public async getCoordinates(address: string): Promise<Coordinate> {
@@ -22,7 +24,7 @@ export class GoogleMapsService {
     const results = res.data.results;
 
     if (res.data.status !== "OK" || !results.length) {
-      Logger.error(res.data.error_message);
+      this.logger.error(res.data.error_message);
       throw new GoogleMapsErrors.InvalidAddressError();
     }
 
@@ -43,7 +45,7 @@ export class GoogleMapsService {
     const { elements: destinationDistances } = distanceMatrixResponse.data.rows[0];
 
     if (distanceMatrixResponse.data.status !== "OK" || !destinationDistances.length) {
-      Logger.error(distanceMatrixResponse.data.error_message);
+      this.logger.error(distanceMatrixResponse.data.error_message);
       throw new GoogleMapsErrors.DistanceCalculationFailedError(); //TODO: change htis
     }
 

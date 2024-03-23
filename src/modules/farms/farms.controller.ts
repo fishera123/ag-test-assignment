@@ -1,7 +1,6 @@
 import { instanceToPlain } from "class-transformer";
 import { NextFunction, Response } from "express";
-import { PaginationQueryFilter } from "helpers/pagination-query";
-import { AuthenticatedRequest } from "modules/auth/auth.types";
+import { ExtendedRequest } from "types";
 import { CreateFarmInputDto } from "./dto/create-farm.input.dto";
 import { OrderByEnum } from "./enums/order-by.enum";
 import { OutlierFilter } from "./enums/outlier-filter.enum";
@@ -14,7 +13,7 @@ export class FarmsController {
     this.farmsService = new FarmsService();
   }
 
-  public async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  public async create(req: ExtendedRequest, res: Response, next: NextFunction) {
     try {
       const farm = await this.farmsService.createFarm(req.body as CreateFarmInputDto, req.user);
 
@@ -24,12 +23,12 @@ export class FarmsController {
     }
   }
 
-  public async findAll(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  public async findAll(req: ExtendedRequest, res: Response, next: NextFunction) {
     try {
       const farm = await this.farmsService.findAllFarms(
         req.query.orderBy as OrderByEnum,
         req.query.outlierFilter as OutlierFilter,
-        req.pagination as PaginationQueryFilter,
+        req.pagination,
         req.user,
       );
 

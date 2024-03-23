@@ -147,6 +147,29 @@ describe("FarmsController", function () {
       });
     });
 
+    it("should throw UnprocessableEntityError if authenticated user tries to create farm for under other user ownership", async () => {
+      await ds.getRepository(Farm).save({
+        ...input,
+        coordinates: `${faker.location.latitude()}, ${faker.location.longitude()}`,
+        owner: user,
+        drivingDistance: 0,
+      });
+
+      const res = await agent
+        .post("/api/farms")
+        .auth(token, { type: "bearer" })
+        .send({
+          ...input,
+          owner: faker.internet.email(),
+        });
+
+      expect(res.statusCode).toBe(422);
+      expect(res.body).toMatchObject({
+        name: "UnprocessableEntityError",
+        message: "You can only create farms for yourself",
+      });
+    });
+
     it("should throw BadRequestError if invalid inputs are provided", async () => {
       const res = await agent
         .post("/api/farms")

@@ -1,29 +1,29 @@
+import { Response } from "express";
 import morgan from "morgan";
 import config from "../config/config";
-import { NextFunction, Request, Response } from "express";
 import { Logger } from "../helpers/logger";
+
+const logger = Logger.getInstance();
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
 morgan.token("message", (_, res: Response) => res.locals.errorMessage || "");
 
 const getIpFormat = () => (config.NODE_ENV === "production" ? ":remote-addr - " : "");
 
-const successResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms`;
-const errorResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms - message: :message`;
+export const loggerMiddleware = morgan((tokens, req, res) => {
+  const status = <string>tokens.status(req, res);
+  const level = status >= "400" ? "error" : "info";
+  const message = [
+    getIpFormat(),
+    tokens.method(req, res),
+    tokens.url(req, res),
+    status,
+    "-",
+    tokens["response-time"](req, res),
+    "ms",
+    status >= "400" ? `- message: ${tokens.message(req, res) || ""}` : "",
+  ].join(" ");
 
-export const loggerMiddleware = (_: Request, res: Response, next: NextFunction) => {
-  if (res.statusCode >= 400) {
-    morgan(errorResponseFormat, {
-      skip: (_, res) => res.statusCode < 400,
-      stream: { write: message => Logger.error(message.trim()) },
-    });
-    next();
-  } else {
-    morgan(successResponseFormat, {
-      skip: (_, res) => res.statusCode >= 400,
-      stream: { write: message => Logger.info(message.trim()) },
-    });
-
-    next();
-  }
-};
+  logger[level](message.trim());
+  return null;
+});

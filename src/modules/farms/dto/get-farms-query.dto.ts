@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional } from "class-validator";
+import { IsEnum, IsNumberString, IsOptional } from "class-validator";
 import { OrderByEnum } from "../enums/order-by.enum";
 import { OutlierFilter } from "../enums/outlier-filter.enum";
 
@@ -11,11 +11,11 @@ export class GetFarmsQueryDto {
   @IsEnum(OutlierFilter)
   public outliers: OutlierFilter;
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
   public page: number;
 
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
   public limit: number;
 

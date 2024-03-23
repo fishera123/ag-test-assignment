@@ -10,6 +10,8 @@ import cors from "cors";
 export function setupServer(): Express {
   const app = express();
 
+  app.use(loggerMiddleware);
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(helmet());
@@ -19,7 +21,6 @@ export function setupServer(): Express {
 
   app.use("/api", routes);
 
-  app.use(loggerMiddleware);
   app.use(handleErrorMiddleware);
 
   swaggerDocs(app);

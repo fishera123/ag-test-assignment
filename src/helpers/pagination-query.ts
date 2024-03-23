@@ -9,7 +9,7 @@ export type PaginationParams = {
   limit?: string;
 };
 
-const DEFAULT_LIMIT = 50;
+const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 100;
 const DEFAULT_PAGE = 1;
 

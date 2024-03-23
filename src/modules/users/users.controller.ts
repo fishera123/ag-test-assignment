@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import { CreateUserOutputDto } from "./dto/create-user.output.dto";
-import { CreateUserInputDto } from "./dto/create-user.input.dto";
-import { UsersService } from "./users.service";
 import { plainToInstance } from "class-transformer";
+import { NextFunction, Response } from "express";
+import { ExtendedRequest } from "types";
+import { CreateUserInputDto } from "./dto/create-user.input.dto";
+import { CreateUserOutputDto } from "./dto/create-user.output.dto";
+import { UsersService } from "./users.service";
 
 export class UsersController {
   private readonly usersService: UsersService;
@@ -11,7 +12,7 @@ export class UsersController {
     this.usersService = new UsersService();
   }
 
-  public async create(req: Request, res: Response, next: NextFunction) {
+  public async create(req: ExtendedRequest, res: Response, next: NextFunction) {
     try {
       const user = await this.usersService.createUser(req.body as CreateUserInputDto);
 
